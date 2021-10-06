@@ -21,3 +21,9 @@ set_target_properties(third_party_jsoncpp PROPERTIES
   IMPORTED_LOCATION "${JSONCPP_ROOT_DIR}/lib/libjsoncpp.so"
   INTERFACE_INCLUDE_DIRECTORIES "${JSONCPP_ROOT_DIR}/include"
 )
+
+# eigen3
+add_library(third_party_eigen3 INTERFACE IMPORTED)
+set_target_properties(third_party_eigen3 PROPERTIES
+  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/third-party/eigen3/include/eigen3"
+)
