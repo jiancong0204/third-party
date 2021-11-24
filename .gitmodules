@@ -1,0 +1,12 @@
+[submodule "glog"]
+	path = glog
+	url = git@github.com:google/glog.git
+[submodule "gflags"]
+	path = gflags
+	url = git@github.com:gflags/gflags.git
+[submodule "jsoncpp"]
+	path = jsoncpp
+	url = git@github.com:open-source-parsers/jsoncpp.git
+[submodule "eigen"]
+	path = eigen
+	url = git@gitlab.com:libeigen/eigen.git
