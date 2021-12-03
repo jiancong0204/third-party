@@ -27,3 +27,8 @@ add_library(third_party_eigen3 INTERFACE IMPORTED)
 set_target_properties(third_party_eigen3 PROPERTIES
   INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/third-party/eigen3/include/eigen3"
 )
+
+# boost
+set(Boost_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/third-party/boost/lib")
+set(Boost_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/boost/include")
+find_package(Boost 1.63.0 EXACT REQUIRED)
