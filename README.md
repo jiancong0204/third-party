@@ -6,7 +6,7 @@
 | Library | Version |
 |  ----   | ----    |
 | Boost   | 1.63.0  |
-| Eigen   | 3.3.9   |
+| Eigen   | 3.3.4   |
 | glog    | 0.6.0   |
 | gflags  | 2.2.2   |
 | jsoncpp | 1.9.5   | 
