@@ -23,12 +23,25 @@ set_target_properties(third_party_jsoncpp PROPERTIES
 )
 
 # eigen3
-add_library(third_party_eigen3 INTERFACE IMPORTED)
-set_target_properties(third_party_eigen3 PROPERTIES
-  INTERFACE_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/third-party/eigen3/include/eigen3"
-)
+find_package(Eigen3 REQUIRED)
+message("Found Eigen version: ${Eigen3_VERSION}")
 
 # boost
 set(Boost_LIBRARY_DIR "${PROJECT_SOURCE_DIR}/third-party/boost/lib")
 set(Boost_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/third-party/boost/include")
 find_package(Boost 1.63.0 EXACT REQUIRED)
+message("Found Boost version: ${Boost_VERSION}")
+
+set(THIRD_PARTY_LIBS
+  third_party_jsoncpp
+  third_party_glog
+  third_party_gflags
+  Eigen3::Eigen
+  ${Boost_LIBRARIES}
+)
+
+SET(THIRD_PARTY_INCLUDE
+  ${Boost_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIR}
+)
+ 
