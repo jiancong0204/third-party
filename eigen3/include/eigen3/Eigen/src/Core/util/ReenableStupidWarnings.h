@@ -1,5 +1,5 @@
 #ifdef EIGEN_WARNINGS_DISABLED_2
-// "DisableStupidWarnings.h" was included twice recursively: Do not reenable warnings yet!
+// "DisableStupidWarnings.h" was included twice recursively: Do not re-enable warnings yet!
 #  undef EIGEN_WARNINGS_DISABLED_2
 
 #elif defined(EIGEN_WARNINGS_DISABLED)
@@ -17,13 +17,21 @@
   #endif
 
   #if defined __NVCC__
-//    Don't reenable the diagnostic messages, as it turns out these messages need
+//    Don't re-enable the diagnostic messages, as it turns out these messages need
 //    to be disabled at the point of the template instantiation (i.e the user code)
 //    otherwise they'll be triggered by nvcc.
-//    #pragma diag_default code_is_unreachable
-//    #pragma diag_default initialization_not_reachable
-//    #pragma diag_default 2651
-//    #pragma diag_default 2653
+//    #define EIGEN_MAKE_PRAGMA(X) _Pragma(#X)
+//    #if __NVCC_DIAG_PRAGMA_SUPPORT__
+//      #define EIGEN_NV_DIAG_DEFAULT(X) EIGEN_MAKE_PRAGMA(nv_diag_default X)
+//    #else
+//      #define EIGEN_NV_DIAG_DEFAULT(X) EIGEN_MAKE_PRAGMA(diag_default X)
+//    #endif
+//    EIGEN_NV_DIAG_DEFAULT(code_is_unreachable)
+//    EIGEN_NV_DIAG_DEFAULT(initialization_not_reachable)
+//    EIGEN_NV_DIAG_DEFAULT(2651)
+//    EIGEN_NV_DIAG_DEFAULT(2653)
+//    #undef EIGEN_NV_DIAG_DEFAULT
+//    #undef EIGEN_MAKE_PRAGMA
   #endif
 
 #endif

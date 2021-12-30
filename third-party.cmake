@@ -1,3 +1,5 @@
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} "${PROJECT_SOURCE_DIR}/third-party/")
+
 # glog
 add_library(third_party_glog SHARED IMPORTED)
 set(GLOG_ROOT_DIR "${PROJECT_SOURCE_DIR}/third-party/glog")

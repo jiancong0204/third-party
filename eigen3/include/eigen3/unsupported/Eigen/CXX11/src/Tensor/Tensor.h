@@ -11,6 +11,8 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_H
 #define EIGEN_CXX11_TENSOR_TENSOR_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /** \class Tensor
@@ -42,7 +44,8 @@ namespace Eigen {
   * \endcode
   *
   * This class can be extended with the help of the plugin mechanism described on the page
-  * \ref TopicCustomizing_Plugins by defining the preprocessor symbol \c EIGEN_TENSOR_PLUGIN.
+  * \ref TopicCustomizing_Plugins by defining the preprocessor symbol \c EIGEN_TENSOR_PLUGIN,
+  * \c EIGEN_TENSORBASE_PLUGIN, and \c EIGEN_READONLY_TENSORBASE_PLUGIN.
   *
   * <i><b>Some notes:</b></i>
   *
@@ -73,7 +76,7 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
     typedef typename Base::CoeffReturnType CoeffReturnType;
 
     enum {
-      IsAligned = bool(EIGEN_MAX_ALIGN_BYTES>0) & !(Options_&DontAlign),
+      IsAligned = (EIGEN_MAX_ALIGN_BYTES>0) && !(Options_&DontAlign),
       Layout = Options_ & RowMajor ? RowMajor : ColMajor,
       CoordAccess = true,
       RawAccess = true
@@ -112,7 +115,7 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
 
 #if EIGEN_HAS_VARIADIC_TEMPLATES
     template<typename... IndexTypes>
-    EIGEN_DEVICE_FUNC inline const Scalar& coeff(Index firstIndex, Index secondIndex, IndexTypes... otherIndices) const
+    EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Scalar& coeff(Index firstIndex, Index secondIndex, IndexTypes... otherIndices) const
     {
       // The number of indices used to access a tensor coefficient must be equal to the rank of the tensor.
       EIGEN_STATIC_ASSERT(sizeof...(otherIndices) + 2 == NumIndices, YOU_MADE_A_PROGRAMMING_MISTAKE)
@@ -388,6 +391,7 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
       resize(TensorEvaluator<const Assign, DefaultDevice>(assign, DefaultDevice()).dimensions());
       internal::TensorExecutor<const Assign, DefaultDevice>::run(assign, DefaultDevice());
     }
+
     template<typename OtherDerived>
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE Tensor(const TensorBase<OtherDerived, WriteAccessors>& other)
@@ -397,6 +401,20 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
       resize(TensorEvaluator<const Assign, DefaultDevice>(assign, DefaultDevice()).dimensions());
       internal::TensorExecutor<const Assign, DefaultDevice>::run(assign, DefaultDevice());
     }
+
+    #if EIGEN_HAS_RVALUE_REFERENCES
+    EIGEN_DEVICE_FUNC
+    EIGEN_STRONG_INLINE Tensor(Self&& other)
+      : m_storage(std::move(other.m_storage))
+    {
+    }
+    EIGEN_DEVICE_FUNC
+    EIGEN_STRONG_INLINE Tensor& operator=(Self&& other)
+    {
+      m_storage = std::move(other.m_storage);
+      return *this;
+    }
+    #endif
 
     EIGEN_DEVICE_FUNC
     EIGEN_STRONG_INLINE Tensor& operator=(const Tensor& other)
@@ -462,6 +480,18 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
       // Nothing to do: rank 0 tensors have fixed size
     }
 
+#ifdef EIGEN_HAS_INDEX_LIST
+    template <typename FirstType, typename... OtherTypes>
+    EIGEN_DEVICE_FUNC
+    void resize(const Eigen::IndexList<FirstType, OtherTypes...>& dimensions) {
+      array<Index, NumIndices> dims;
+      for (int i = 0; i < NumIndices; ++i) {
+        dims[i] = static_cast<Index>(dimensions[i]);
+      }
+      resize(dims);
+    }
+#endif
+
     /** Custom Dimension */
 #ifdef EIGEN_HAS_SFINAE
     template<typename CustomDimension,
@@ -494,6 +524,10 @@ class Tensor : public TensorBase<Tensor<Scalar_, NumIndices_, Options_, IndexTyp
       resize(dims);
     }
 #endif
+
+    #ifdef EIGEN_TENSOR_PLUGIN
+    #include EIGEN_TENSOR_PLUGIN
+    #endif
 
   protected:
 
